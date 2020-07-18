@@ -12,7 +12,6 @@ namespace bumShopSolution.Data.Entities
         public int Stock { get; set; }
         public int ViewCount { get; set; }
         public DateTime DateCreated { get; set; }
-        public string SeoAlias { get; set; }
         public List<ProductInCategory> productInCategories { get; set; }
         public List<OrderDetail> orderDetails { get; set; }
         public List<Cart> Carts { get; set; }
