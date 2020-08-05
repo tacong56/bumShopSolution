@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using bumShopSolution.Data.EF;
 
 namespace bumShopSolution.Data.Migrations
 {
     [DbContext(typeof(BumShopDbContext))]
-    partial class BumShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200723035920_AspNetCoreIdentityDatabase")]
+    partial class AspNetCoreIdentityDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,13 +94,6 @@ namespace bumShopSolution.Data.Migrations
                     b.HasKey("UserId", "RoleId");
 
                     b.ToTable("AppUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("e148f6c4-9281-474e-866d-f306b11399d1"),
-                            RoleId = new Guid("a2719ce9-f1e5-41aa-8d0e-860995ef33c7")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -175,16 +170,6 @@ namespace bumShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a2719ce9-f1e5-41aa-8d0e-860995ef33c7"),
-                            ConcurrencyStamp = "cb8ceaca-a4e6-48b7-8c24-3cbdce98e2da",
-                            Description = "Admintrator role",
-                            Name = "admin",
-                            NormalizedName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("bumShopSolution.Data.Entities.AppUser", b =>
@@ -251,27 +236,6 @@ namespace bumShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("e148f6c4-9281-474e-866d-f306b11399d1"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "6b63fcc0-30d0-4baa-a5da-e417004ba0a7",
-                            Dob = new DateTime(1997, 6, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "tacong56@gmail.com",
-                            EmailConfirmed = true,
-                            FirstName = "Ta",
-                            LastName = "Cong",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "tacong56@gmail.com",
-                            NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDithsNPQ0Wejt7cs4atbmnSjvj4zC89VZTcMT5NYZqlFRZXoKcn2Tr8F9qTBYmLTQ==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("bumShopSolution.Data.Entities.Cart", b =>
@@ -448,7 +412,7 @@ namespace bumShopSolution.Data.Migrations
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2020, 8, 5, 16, 24, 5, 676, DateTimeKind.Local).AddTicks(9391));
+                        .HasDefaultValue(new DateTime(2020, 7, 23, 10, 59, 20, 26, DateTimeKind.Local).AddTicks(2878));
 
                     b.Property<string>("ShipAddress")
                         .IsRequired()
