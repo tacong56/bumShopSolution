@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\bumShopSolution.Data\bumShopSolution.Data.csproj" />
+    <ProjectReference Include="..\BumShopSolution.Utilities\BumShopSolution.Utilities.csproj" />
+  </ItemGroup>
+
 </Project>
