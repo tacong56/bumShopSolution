@@ -14,7 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bumShopSolution.Data", "bum
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bumShopSolution.Application", "bumShopSolution.Application\bumShopSolution.Application.csproj", "{09E4A998-0642-454C-9736-C57A9605D3F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BumShopSolution.Utilities", "BumShopSolution.Utilities\BumShopSolution.Utilities.csproj", "{A862D0FF-165E-446F-B9B6-7B1042E8490A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BumShopSolution.Utilities", "BumShopSolution.Utilities\BumShopSolution.Utilities.csproj", "{A862D0FF-165E-446F-B9B6-7B1042E8490A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bumShopSolution.ViewModels", "bumShopSolution.ViewModels\bumShopSolution.ViewModels.csproj", "{DDB6911D-B5A5-4501-BCEF-E1B059633B99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bumShopSolution.BackendApi", "bumShopSolution.BackendApi\bumShopSolution.BackendApi.csproj", "{2C2B280F-9DEB-4200-90A9-C25148FF4693}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +42,14 @@ Global
 		{A862D0FF-165E-446F-B9B6-7B1042E8490A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A862D0FF-165E-446F-B9B6-7B1042E8490A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A862D0FF-165E-446F-B9B6-7B1042E8490A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDB6911D-B5A5-4501-BCEF-E1B059633B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDB6911D-B5A5-4501-BCEF-E1B059633B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDB6911D-B5A5-4501-BCEF-E1B059633B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDB6911D-B5A5-4501-BCEF-E1B059633B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2B280F-9DEB-4200-90A9-C25148FF4693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2B280F-9DEB-4200-90A9-C25148FF4693}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2B280F-9DEB-4200-90A9-C25148FF4693}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2B280F-9DEB-4200-90A9-C25148FF4693}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

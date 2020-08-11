@@ -11,7 +11,7 @@ namespace bumShopSolution.Data.Entities
         public int SortOrder { get; set; }
         public bool IsShowOnHome { get; set; }
         public int? ParentId { get; set; }
-        public Status status { get; set; }
+        public Status Status { get; set; }
         public List<ProductInCategory> productInCategories { get; set; }
         public List<CategoryTranslation> CategoryTranslations { get; set; }
     }

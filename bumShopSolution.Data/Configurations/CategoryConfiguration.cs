@@ -15,7 +15,7 @@ namespace bumShopSolution.Data.Configurations
             builder.ToTable("Categories");
             builder.HasKey(o => o.Id);
             builder.Property(o => o.Id).UseIdentityColumn();
-            builder.Property(o => o.status).HasDefaultValue(Status.Active);
+            builder.Property(o => o.Status).HasDefaultValue(Status.Active);
         }
     }
 }

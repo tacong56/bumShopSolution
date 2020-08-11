@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace bumShopSolution.Application.Dtos
+namespace bumShopSolution.ViewModels.Common
 {
     public class PagedResult<T>
     {
