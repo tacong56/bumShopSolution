@@ -1,11 +1,11 @@
-﻿using bumShopSolution.Application.Dtos;
+﻿using bumShopSolution.ViewModels.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace bumShopSolution.Application.Catalog.Products.Dtos.Manage
+namespace bumShopSolution.ViewModels.Catalog.Products
 {
-    public class GetProductPagingRequest : PagingRequestBase
+    public class GetManageProductPagingRequest : PagingRequestBase
     {
         public string Keyword { get; set; }
         public List<int> CategoryIds { get; set; }

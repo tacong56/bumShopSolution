@@ -1,14 +1,17 @@
 ﻿using bumShopSolution.Application.Catalog.Products.Dtos;
-using bumShopSolution.Application.Catalog.Products.Dtos.Manage;
-using bumShopSolution.Application.Dtos;
+using bumShopSolution.Application.Common;
 using bumShopSolution.Data.EF;
 using bumShopSolution.Data.Entities;
+using bumShopSolution.ViewModels.Catalog.Products;
+using bumShopSolution.ViewModels.Common;
 using BumShopSolution.Utilities.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace bumShopSolution.Application.Catalog.Products
@@ -16,9 +19,11 @@ namespace bumShopSolution.Application.Catalog.Products
     public class ManageProductService : IManageProductService
     {
         private readonly BumShopDbContext _context;
-        public ManageProductService(BumShopDbContext context)
+        private readonly IStorageService _storageService;
+        public ManageProductService(BumShopDbContext context, IStorageService storageService)
         {
             context = _context;
+            storageService = _storageService;
         }
 
         public async Task AddViewCount(int productId)
@@ -52,6 +57,22 @@ namespace bumShopSolution.Application.Catalog.Products
                 }
             };
 
+            //Save image
+            if (request.ThumbnailImage != null)
+            {
+                product.ProductImages = new List<ProductImage>()
+                {
+                    new ProductImage()
+                    {
+                        Caption = "Thumbnail Image",
+                        DateCreated = DateTime.Now,
+                        FileSize = request.ThumbnailImage.Length,
+                        ImagePath = await this.SaveFile(request.ThumbnailImage),
+                        IsDefault = true,
+                        SortOrder = 1,
+                    }
+                };
+            }
             _context.Products.Add(product);
             return await _context.SaveChangesAsync();
         }
@@ -61,11 +82,17 @@ namespace bumShopSolution.Application.Catalog.Products
             var product = await _context.Products.FindAsync(productId);
             if (product == null) throw new BumShopException($"Không thể tìm được sản phẩm: {productId}");
 
+            var images = _context.ProductImages.Where(i => i.ProductId == productId);
+            foreach (var item in images)
+            {
+                await _storageService.DeleteFileAsync(item.ImagePath);
+            }
+
             _context.Products.Remove(product);
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<PagedResult<ProductViewModel>> GetAllPaging(GetProductPagingRequest request)
+        public async Task<PagedResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request)
         {
             //1. Select join
             var query = from p in _context.Products
@@ -126,6 +153,18 @@ namespace bumShopSolution.Application.Catalog.Products
             productTranslations.SeoTitle = request.SeoTitle;
             productTranslations.Details = request.Details;
 
+            //Save image
+            if (request.ThumbnailImage != null)
+            {
+                var thumbnailImage = await _context.ProductImages.FirstOrDefaultAsync(x => x.IsDefault == true && x.ProductId == request.Id);
+                if (thumbnailImage != null)
+                {
+                    thumbnailImage.FileSize = request.ThumbnailImage.Length;
+                    thumbnailImage.ImagePath = await this.SaveFile(request.ThumbnailImage);
+                    _context.ProductImages.Update(thumbnailImage);
+                }
+            }
+
             return await _context.SaveChangesAsync();
         }
 
@@ -145,6 +184,52 @@ namespace bumShopSolution.Application.Catalog.Products
             product.Stock += addedQuantity;
 
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<int> AddImages(int productId, List<IFormFile> files)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> UpdateImages(int imageId, string caption, bool isDefault)
+        {
+            var image = await _context.ProductImages.FindAsync(imageId);
+
+            if (image == null) throw new BumShopException($"Không thể tìm được sản phẩm với id: {imageId}");
+
+            image.Caption = caption;
+            image.IsDefault = isDefault;
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> RemoveImages(int imageId)
+        {
+            var image = await _context.ProductImages.FindAsync(imageId);
+            if (image == null) throw new BumShopException($"Không thể tìm được ảnh với mã: {image}");
+
+            _context.ProductImages.Remove(image);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<ProductImageViewModel>> GetListImage(int productId)
+        {
+            return await _context.ProductImages.Where(x => x.ProductId == productId)
+                .Select(i => new ProductImageViewModel()
+                {
+                    Id = i.Id,
+                    FilePath = i.ImagePath,
+                    FileSize = i.FileSize,
+                    IsDefault = i.IsDefault
+                }).ToListAsync();
+        }
+
+        private async Task<string> SaveFile(IFormFile file)
+        {
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
+            return fileName;
         }
     }
 }
