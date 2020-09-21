@@ -2,11 +2,13 @@
 using bumShopSolution.Application.Common;
 using bumShopSolution.Data.EF;
 using bumShopSolution.Data.Entities;
+using bumShopSolution.ViewModels.Catalog.ProductImages;
 using bumShopSolution.ViewModels.Catalog.Products;
 using bumShopSolution.ViewModels.Common;
 using BumShopSolution.Utilities.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,8 +24,8 @@ namespace bumShopSolution.Application.Catalog.Products
         private readonly IStorageService _storageService;
         public ManageProductService(BumShopDbContext context, IStorageService storageService)
         {
-            context = _context;
-            storageService = _storageService;
+            _context = context;
+            _storageService = storageService;
         }
 
         public async Task AddViewCount(int productId)
@@ -74,7 +76,8 @@ namespace bumShopSolution.Application.Catalog.Products
                 };
             }
             _context.Products.Add(product);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return product.Id;
         }
 
         public async Task<int> Delete(int productId)
@@ -139,6 +142,32 @@ namespace bumShopSolution.Application.Catalog.Products
             return pagedResult;
         }
 
+
+        public async Task<ProductViewModel> GetById(int productId, string languageId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            var productTranslation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && languageId == x.LanguageId);
+
+            var productViewModel = new ProductViewModel()
+            {
+                Id = product.Id,
+                DateCreated = product.DateCreated,
+                Description = productTranslation != null ? productTranslation.Description : null,
+                LanguageId = productTranslation.LanguageId,
+                Details = productTranslation != null ? productTranslation.Details : null,
+                Name = productTranslation != null ? productTranslation.Name : null,
+                OriginalPrice = product.OriginalPrice,
+                Price = product.Price,
+                SeoAlias = productTranslation != null ? productTranslation.SeoAlias : null,
+                SeoDescription = productTranslation != null ? productTranslation.SeoDescription : null,
+                SeoTitle = productTranslation != null ? productTranslation.SeoTitle : null,
+                Stock = product.Stock,
+                ViewCount = product.ViewCount,
+            };
+
+            return productViewModel;
+        }
+
         public async Task<int> Update(ProductUpdateRequest request)
         {
             var product = await _context.Products.FindAsync(request.Id);
@@ -186,30 +215,77 @@ namespace bumShopSolution.Application.Catalog.Products
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<int> AddImages(int productId, List<IFormFile> files)
+        public async Task<int> AddImage(int productId, ProductImageCreateRequest request)
         {
-            throw new NotImplementedException();
+            var productImage = new ProductImage()
+            {
+                Caption = request.Caption,
+                DateCreated = DateAndTime.Now,
+                IsDefault = request.IsDefault,
+                ProductId = productId,
+                SortOrder = request.SortOrder
+            };
+
+            if (request.ImageFile != null)
+            {
+                productImage.ImagePath = await this.SaveFile(request.ImageFile);
+                productImage.FileSize = request.ImageFile.Length;
+            }
+            _context.ProductImages.Add(productImage);
+            await _context.SaveChangesAsync();
+
+            return productImage.Id;
         }
 
-        public async Task<int> UpdateImages(int imageId, string caption, bool isDefault)
+        public async Task<int> UpdateImage(int imageId, ProductImageUpdateRequest request)
         {
-            var image = await _context.ProductImages.FindAsync(imageId);
+            var productImage = await _context.ProductImages.FindAsync(imageId);
+            if (productImage == null)
+            {
+                throw new BumShopException($"Không thể tìm thấy ảnh với id {imageId}");
+            }
 
-            if (image == null) throw new BumShopException($"Không thể tìm được sản phẩm với id: {imageId}");
-
-            image.Caption = caption;
-            image.IsDefault = isDefault;
+            if (productImage != null)
+            {
+                productImage.ImagePath = await this.SaveFile(request.ImageFile);
+                productImage.FileSize = request.ImageFile.Length;
+            }
+            _context.ProductImages.Update(productImage);
 
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<int> RemoveImages(int imageId)
+        public async Task<int> RemoveImage(int imageId)
+        {
+            var productImage = await _context.ProductImages.FindAsync(imageId);
+            if (productImage == null)
+                throw new BumShopException($"Không thể tìm được ảnh với mã: {imageId}");
+
+            _context.ProductImages.Remove(productImage);
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<ProductImageViewModel> GetImageById(int imageId)
         {
             var image = await _context.ProductImages.FindAsync(imageId);
-            if (image == null) throw new BumShopException($"Không thể tìm được ảnh với mã: {image}");
 
-            _context.ProductImages.Remove(image);
-            return await _context.SaveChangesAsync();
+            if (image == null)
+                throw new BumShopException($"Không thể tìm được ảnh với mã: {imageId}");
+
+            var viewModel = new ProductImageViewModel()
+            {
+                Id = image.Id,
+                ImagePath = image.ImagePath,
+                FileSize = image.FileSize,
+                IsDefault = image.IsDefault,
+                Caption = image.Caption,
+                DateCreated = image.DateCreated,
+                ProductId = image.ProductId,
+                SortOrder = image.SortOrder
+            };
+
+            return viewModel;
         }
 
         public async Task<List<ProductImageViewModel>> GetListImage(int productId)
@@ -218,9 +294,13 @@ namespace bumShopSolution.Application.Catalog.Products
                 .Select(i => new ProductImageViewModel()
                 {
                     Id = i.Id,
-                    FilePath = i.ImagePath,
+                    ImagePath = i.ImagePath,
                     FileSize = i.FileSize,
-                    IsDefault = i.IsDefault
+                    IsDefault = i.IsDefault,
+                    Caption = i.Caption,
+                    DateCreated = i.DateCreated,
+                    ProductId = i.ProductId,
+                    SortOrder = i.SortOrder
                 }).ToListAsync();
         }
 
