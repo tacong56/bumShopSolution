@@ -1,6 +1,7 @@
 ﻿using bumShopSolution.Application.Catalog.Products;
 using bumShopSolution.ViewModels.Catalog.ProductImages;
 using bumShopSolution.ViewModels.Catalog.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace bumShopSolution.BackendApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IPublicProductService _publicProductService;
